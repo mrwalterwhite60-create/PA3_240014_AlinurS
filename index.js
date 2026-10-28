@@ -284,7 +284,7 @@ function onRequestSession() {
 
   const sessionInit = {
     requiredFeatures: ["hit-test"],
-    optionalFeatures: ["anchors", "dom-overlay"],
+    optionalFeatures: ["local-floor", "anchors", "dom-overlay"],
     domOverlay: { root: overlayElement }
   };
 
@@ -319,8 +319,27 @@ async function onSessionStarted(session) {
   hudSessionState.textContent = "active";
   hudSessionState.className = "hud-val valid";
 
-  // Three.js sets up XR layer and internal reference space
-  await renderer.xr.setSession(session);
+  // Critical fix for mobile ARCore (Samsung, Pixel, etc.):
+  // Three.js r186 defaults to 'local-floor'. Android Chrome throws unsupported reference space
+  // unless explicitly set to 'local' before calling setSession() (as instructed in assignment skeleton).
+  try {
+    renderer.xr.setReferenceSpaceType("local");
+  } catch (e) {
+    console.warn("[WebXR] setReferenceSpaceType notice:", e);
+  }
+
+  try {
+    await renderer.xr.setSession(session);
+  } catch (err) {
+    console.error("[WebXR] setSession failed with 'local', trying fallback:", err);
+    try {
+      renderer.xr.setReferenceSpaceType("viewer");
+      await renderer.xr.setSession(session);
+    } catch (err2) {
+      alert(`Could not start AR session: ${err.message}`);
+      return;
+    }
+  }
 
   // Get local reference space (world coordinate frame)
   localSpace = renderer.xr.getReferenceSpace();
