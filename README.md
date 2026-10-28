@@ -8,7 +8,7 @@
 | **Course** | AR/VR/XR Applications (AIB), 6B04103 AI Business, 3rd year |
 | **Assignment** | PA3 — Augmented Reality Website with Hit-Testing |
 | **Three.js Release** | `0.186.1` (Pinned via Import Map & `package.json`) |
-| **Repository** | https://github.com/AlinurS-AIB2401/PA3_240014_AlinurS |
+| **Repository** | https://github.com/mrwalterwhite60-create/PA3_240014_AlinurS |
 
 ---
 
